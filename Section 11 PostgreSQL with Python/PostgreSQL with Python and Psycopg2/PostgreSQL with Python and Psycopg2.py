@@ -2,7 +2,7 @@ import psycopg2 as pg2
 
 
 # creating a connection with postgresql
-conn = pg2.connect(dbname='dvdrental', password=9946855730, user='postgres')
+conn = pg2.connect(dbname='dvdrental', password=**********, user='postgres')
 
 # Establish connection and start cursor to be ready to query
 cur = conn.cursor()
