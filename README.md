@@ -104,3 +104,75 @@ SELECT * FROM film WHERE title ILIKE 'gross%';
 SELECT * FROM film WHERE title ILIKE '%ss%';
 SELECT * FROM film WHERE title ILIKE '%Gla__';
 ```
+
+## Aggregate Functions
+
+Aggregate functions take multiple inputs and return a single output. Examples include `AVG()`, `COUNT()`, `MAX()`, `MIN()`, `SUM()`.
+
+- `AVG()`: Returns the mean average. It returns a floating point, so use `ROUND()` along with it to specify the precision.
+
+```sql
+SELECT ROUND(AVG(amount),2) FROM payment;
+```
+
+- `MIN()`, `MAX()`: Returns the minimum and maximum value, respectively.
+
+```sql
+SELECT MIN(amount), MAX(amount) FROM payment;
+```
+
+- `SUM()`: Returns the total value.
+
+```sql
+SELECT SUM(amount) FROM payment;
+```
+
+- `COUNT()`: Returns the number of rows.
+
+```sql
+SELECT COUNT(*) FROM payment;
+```
+
+## GROUP BY
+
+`GROUP BY` is used to aggregate columns per some category. It must appear right after `FROM` or `WHERE`. In the `SELECT` statement, columns must either have an aggregate function or be the `GROUP BY` call. `WHERE` should not refer to aggregation result.
+
+```sql
+SELECT rating, COUNT(*) FROM  film
+GROUP BY rating;
+
+SELECT COUNT(*) FROM  film
+GROUP BY rating;
+```
+
+When we `ORDER BY` we need to order by the "GROUP BY column" or by "AGG(data_col)" for ordering in order of data col.
+
+```sql
+SELECT rating, COUNT(*) FROM  film
+WHERE rating != 'R'
+GROUP BY rating
+ORDER BY rating;
+```
+
+We can `GROUP BY` multiple columns.
+
+```sql
+SELECT rating, rental_rate, COUNT(*) FROM film
+GROUP BY rating, rental_rate
+ORDER BY rating, rental_rate, COUNT(*);
+```
+
+If we are using `GROUP BY` on timestamp we need to use `DATE` to convert the timestamp to date datatype.
+
+```sql
+SELECT DATE(last_update), SUM(replacement_cost) FROM film
+GROUP BY DATE(last_update);
+```
+
+We can't use `WHERE` to filter based off aggregate results, because those happen after a `WHERE` is executed. `HAVING` helps us to filter after an aggregation has already taken place. `HAVING` can be used along with `GROUP BY` to filter aggregate result.
+
+```sql
+SELECT rating, SUM(replacement_cost) FROM film
+GROUP BY rating
+HAVING SUM(replacement_cost) > 4000;
+```
