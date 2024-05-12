@@ -176,3 +176,109 @@ SELECT rating, SUM(replacement_cost) FROM film
 GROUP BY rating
 HAVING SUM(replacement_cost) > 4000;
 ```
+
+## AS
+
+`AS` allows us to create an alias for a column and results. It gets executed at the very end of a query, meaning we can't use the ALIAS for a function inside `WHERE`, `HAVING` operators.
+
+Example:
+```sql
+SELECT customer_id AS c_id, SUM(amount) AS total FROM payment
+GROUP BY c_id
+HAVING SUM(amount) > 150;
+```
+
+## JOINS
+
+`JOIN` allows us to combine information from multiple tables. We need to specify the name of the table before the column in `JOIN` for column names that are in both tables.
+
+#### INNER JOIN
+
+`INNER JOIN` gives us results that match both tables. `INNER JOIN` are symmetrical (Table A, Table B => Table B, Table A gives same results). PostgreSQL treats `JOIN` as `INNER JOIN`.
+
+Example:
+```sql
+SELECT * FROM actor
+INNER JOIN film_actor
+ON actor.actor_id = film_actor.actor_id;
+```
+
+We can give an alias to a column to make it easy to write.
+```sql
+SELECT * FROM payment AS pa
+INNER JOIN customer AS cu
+ON pa.customer_id = cu.customer_id;
+```
+
+#### FULL OUTER JOIN
+
+`FULL OUTER JOIN` are symmetrical (Table A, Table B => Table B, Table A gives same results). In `FULL OUTER JOIN`, the result gives a table with all columns (with a new row for each additional id) data with of both tables where null value is placed in columns which don't have a match.
+
+Example:
+```sql
+SELECT * FROM staff AS st
+FULL OUTER JOIN customer AS cu
+ON st.first_name = cu.first_name;
+```
+
+`WHERE` is used with `FULL OUTER JOIN` to get rows that are not present in both tables (i.e., we get unique columns from both tables).
+```sql
+SELECT st.first_name, st.last_name, cu.first_name, cu.last_name  FROM staff AS st
+FULL OUTER JOIN customer AS cu
+ON st.first_name = cu.first_name
+WHERE st.staff_id IS null OR cu.customer_id IS null;
+```
+
+#### LEFT OUTER JOIN
+
+`LEFT OUTER JOIN` results in a set of records that are in the left table. If there is no match with the right table, the results are null. `LEFT OUTER JOIN` is not symmetrical (Table A, Table B !=> Table B, Table A) - Gives different results. `LEFT OUTER JOIN` is the same as `LEFT JOIN`. It shows everything in the LEFT table, doesn't show any table unique to the RIGHT table.
+
+Example:
+```sql
+SELECT st.first_name, st.last_name, cu.first_name, cu.last_name  FROM staff AS st
+LEFT OUTER JOIN customer AS cu
+ON st.first_name = cu.first_name;
+```
+
+Here `WHERE` is used to get unique rows to table LEFT.
+```sql
+SELECT cu.first_name, cu.last_name, st.first_name, st.last_name FROM customer AS cu
+LEFT OUTER JOIN staff AS st
+ON st.first_name = cu.first_name
+WHERE st.first_name IS null;
+```
+
+#### RIGHT OUTER JOIN
+
+`RIGHT OUTER JOIN` is everything in `LEFT OUTER JOIN` just in the tables are switched. `RIGHT OUTER JOIN` is the same as `RIGHT JOIN`.
+
+Example:
+```sql
+SELECT st.first_name, st.last_name, cu.first_name, cu.last_name  FROM staff AS st
+RIGHT OUTER JOIN customer AS cu
+ON st.first_name = cu.first_name;
+```
+
+Here `WHERE` is used to get unique rows to table RIGHT.
+```sql
+SELECT cu.first_name, cu.last_name, st.first_name, st.last_name FROM customer AS cu
+RIGHT OUTER JOIN staff AS st
+ON st.first_name = cu.first_name
+WHERE st.first_name IS null;
+```
+
+### UNION
+
+`UNION` combines the result-set of two or more `SELECT` statements. The Union should be "Logical" - i.e., we can only `UNION` the same type of columns. It concatenates two results together.
+
+Syntax:
+```sql
+SELECT * FROM table1 UNION SELECT * FROM table2;
+```
+
+Example:
+```sql
+SELECT first_name, last_name FROM customer
+UNION
+SELECT first_name, last_name FROM staff;
+```
