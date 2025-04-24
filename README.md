@@ -23,7 +23,7 @@ SELECT first_name, last_name FROM actor;
 Use the following command to select specific columns from a table with a condition:
 
 ```sql
-SELECT first_name, last_name, email FROM customer;
+SELECT first_name, last_name, email FROM customer WHERE condition;
 ```
 
 ## Selecting Unique Elements from a Column
